@@ -12,6 +12,7 @@ import json
 import os
 import re
 import requests
+import time
 import threading
 
 ###################################### FUNCTIONS ######################################
@@ -58,8 +59,10 @@ def create_yaml_cleanedlist(root: str, filename: str):
     with open("buffer.txt", "r", encoding="utf-8") as file:
         try:
             for line in file:
+                line = re.sub(r"(?<!:) '([^']+)'(?!:)", r" r3pl4c3m3\1r3pl4c3m3", line)
                 line = line.replace('"', "'")
                 line = re.sub(r"([a-zA-Z])'([a-zA-Z])", r"\1r3pl4c3m3\2", line)
+
                 coincidences = re.findall(r"'[^']+': '[^']+'", line)
                 for item in coincidences:
                     for w in ACCEPTED:
@@ -103,6 +106,7 @@ def get_accepted_keywords():
 def save_leftovers(leftovers: list, root: str, filename: str):
     with open(f'{root}/leftovers_{filename}.txt', "w", encoding="utf-8") as txtfile:
         for item in leftovers:
+            item = item.replace('r3pl4c3m3', "'")
             txtfile.write(item + "\n")
 
 
@@ -134,6 +138,7 @@ def translate_txt(dest_path: str):
                 if len(line) <= 1:
                     continue
                 line = line.strip()
+                time.sleep(0.3)
                 trans_line = translator.translate(line, dest=dest_lang, src=src_lang).text
                 txt_file.write(line + '\n')
                 txt_file.write(trans_line + '\n\n')
